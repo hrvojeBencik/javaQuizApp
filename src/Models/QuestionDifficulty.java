@@ -1,4 +1,4 @@
-package App;
+package Models;
 
 public enum QuestionDifficulty {
 	Easy,
