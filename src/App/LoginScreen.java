@@ -6,6 +6,10 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.border.EmptyBorder;
+
+import Models.User;
+import Services.DBManager;
+
 import java.awt.Color;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -18,29 +22,10 @@ import java.awt.event.ActionEvent;
 
 public class LoginScreen extends JFrame {
 
-	private JPanel loginSreenPane;
+	private JPanel loginScreenPane;
 	private JTextField usernameField;
 	private JTextField passwordField;
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					LoginScreen frame = new LoginScreen();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
-	/**
-	 * Create the frame.
-	 */
 	public LoginScreen() {
 		setResizable(false);
 		setFont(new Font("SansSerif", Font.PLAIN, 12));
@@ -49,50 +34,68 @@ public class LoginScreen extends JFrame {
 		setTitle("QuizApp");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
-		loginSreenPane = new JPanel();
-		loginSreenPane.setBackground(new Color(25, 25, 112));
-		loginSreenPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		setContentPane(loginSreenPane);
-		loginSreenPane.setLayout(null);
+		loginScreenPane = new JPanel();
+		loginScreenPane.setBackground(new Color(25, 25, 112));
+		loginScreenPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		setContentPane(loginScreenPane);
+		loginScreenPane.setLayout(null);
 		
 		JLabel lblNewLabel = new JLabel("Welcome!");
 		lblNewLabel.setBounds(144, 46, 152, 42);
 		lblNewLabel.setForeground(new Color(255, 255, 255));
 		lblNewLabel.setFont(new Font("SansSerif", Font.BOLD, 32));
 		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
-		loginSreenPane.add(lblNewLabel);
+		loginScreenPane.add(lblNewLabel);
 		
 		usernameField = new JTextField();
 		usernameField.setFont(new Font("SansSerif", Font.PLAIN, 14));
 		usernameField.setBounds(144, 99, 152, 30);
-		loginSreenPane.add(usernameField);
+		loginScreenPane.add(usernameField);
 		usernameField.setColumns(10);
 		
 		passwordField = new JPasswordField();
 		passwordField.setFont(new Font("SansSerif", Font.PLAIN, 14));
 		passwordField.setColumns(10);
 		passwordField.setBounds(144, 140, 152, 30);
-		loginSreenPane.add(passwordField);
+		loginScreenPane.add(passwordField);
 		
 		JButton loginBtn = new JButton("Login/Register");
 		loginBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				DBManager db = new DBManager();
 				// Get email and password values, if there is no such user-name in the DB show pop-up for creating new account if user-name is existing log the user in.
 				final String username = usernameField.getText().trim();
 				final String password = passwordField.getText().trim();
-				Boolean existingUser = false;
 				
-				if(!username.isEmpty() && !password.isEmpty() && password.length() > 6) {
-					if(existingUser) {
-						
+				if(!username.isEmpty() && !password.isEmpty() && password.length() > 5) {
+					User user = db.checkIfUserExists(username);
+					if(user != null) {
+						if(db.checkIfPasswordMatches(password, user.getPassword())) {
+							// User exists and good password is entered, logging in
+							db.updateUsersSignedInDate(user.getUsername());
+							new HomeScreen().setVisible(true);
+							dispose();
+						} else {
+							// Wrong password
+							JOptionPane.showMessageDialog(loginScreenPane, "You have entered wrong passwod", "Error", JOptionPane.ERROR_MESSAGE);
+							passwordField.setText("");
+						}
 					} else {
-//						JOptionPane.showMessageDialog(loginSreenPane, "There is no user with this credentials would you like to register? ", "User does not exsist", JOptionPane.INFORMATION_MESSAGE);
-						new HomeScreen().setVisible(true);
-						dispose();
+						// User does not exist, ask him if he wants to register
+						int result = JOptionPane.showConfirmDialog(loginScreenPane, "There is no user with this credentials would you like to register?", "No user found", JOptionPane.YES_NO_OPTION);
+
+					    if (result == JOptionPane.YES_OPTION ) {
+					       db.insertUser(username, password);
+					       new HomeScreen().setVisible(true);
+					       dispose();
+					     } else{
+					    	 // User pressed no
+					    	usernameField.setText("");
+							passwordField.setText("");
+					     }
 					}
 				} else {
-					JOptionPane.showMessageDialog(loginSreenPane, "You need to fill all input fields and password must be longer than 6 characters.", "Wrong input", JOptionPane.ERROR_MESSAGE);
-
+					JOptionPane.showMessageDialog(loginScreenPane, "You need to fill all input fields and password must be longer than 6 characters.", "Wrong input", JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		});
@@ -102,6 +105,6 @@ public class LoginScreen extends JFrame {
 		loginBtn.setOpaque(true);
 		loginBtn.setFont(new Font("SansSerif", Font.BOLD, 14));
 		loginBtn.setBounds(144, 181, 152, 30);
-		loginSreenPane.add(loginBtn);
+		loginScreenPane.add(loginBtn);
 	}
 }
