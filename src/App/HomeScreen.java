@@ -6,6 +6,11 @@ import java.awt.EventQueue;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import Models.Question;
+import Models.Quiz;
+import Services.ApiController;
+
 import java.awt.Color;
 import javax.swing.JLabel;
 import java.awt.Font;
@@ -36,6 +41,11 @@ public class HomeScreen extends JFrame {
 		contentPane.add(lblNewLabel);
 		
 		JButton btn3Q = new JButton("3 QUESTIONS");
+		btn3Q.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				startQuiz(3);
+			}
+		});
 		btn3Q.setForeground(new Color(255, 255, 255));
 		btn3Q.setBackground(new Color(100, 149, 237));
 		btn3Q.setBorderPainted(false);
@@ -45,6 +55,11 @@ public class HomeScreen extends JFrame {
 		contentPane.add(btn3Q);
 		
 		JButton btn5Q = new JButton("5 QUESTIONS");
+		btn5Q.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				startQuiz(5);
+			}
+		});
 		btn5Q.setForeground(new Color(255, 255, 255));
 		btn5Q.setOpaque(true);
 		btn5Q.setFont(new Font("SansSerif", Font.BOLD, 16));
@@ -54,6 +69,11 @@ public class HomeScreen extends JFrame {
 		contentPane.add(btn5Q);
 		
 		JButton btn10Q = new JButton("10 QUESTIONS");
+		btn10Q.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				startQuiz(10);
+			}
+		});
 		btn10Q.setForeground(new Color(255, 255, 255));
 		btn10Q.setOpaque(true);
 		btn10Q.setFont(new Font("SansSerif", Font.BOLD, 16));
@@ -86,5 +106,13 @@ public class HomeScreen extends JFrame {
 		btnLogout.setBackground(new Color(220, 20, 60));
 		btnLogout.setBounds(257, 414, 181, 42);
 		contentPane.add(btnLogout);
+	}
+	
+	public void startQuiz(int questionAmout) {
+		ApiController apiController = new ApiController();
+		Question[] questions = apiController.getQuestions(null, null, 3);
+		Quiz quiz = new Quiz(questions);
+		setContentPane(new QuizPanel(quiz));
+		validate();
 	}
 }
