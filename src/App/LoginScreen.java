@@ -73,7 +73,7 @@ public class LoginScreen extends JFrame {
 						if(db.checkIfPasswordMatches(password, user.getPassword())) {
 							// User exists and good password is entered, logging in
 							db.updateUsersSignedInDate(user.getUsername());
-							new HomeScreen().setVisible(true);
+							new HomeScreen(user.getUsername()).setVisible(true);
 							dispose();
 						} else {
 							// Wrong password
@@ -86,7 +86,7 @@ public class LoginScreen extends JFrame {
 
 					    if (result == JOptionPane.YES_OPTION ) {
 					       db.insertUser(username, password);
-					       new HomeScreen().setVisible(true);
+					       new HomeScreen(username).setVisible(true);
 					       dispose();
 					     } else{
 					    	 // User pressed no

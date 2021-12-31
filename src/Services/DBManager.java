@@ -1,5 +1,8 @@
 package Services;
 
+import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
@@ -145,6 +148,40 @@ public class DBManager {
         }
         
         return null;
+    }
+    
+    public void insertScore(String username, int score, String tableName) {
+    	String sql = String.format("INSERT INTO %s(username, score) VALUES(?, ?)", tableName);
+
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, username);
+            pstmt.setInt(2, score);
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+    
+    public String getScores(String tableName) {
+    	String sql = String.format("SELECT * FROM %s ORDER BY score DESC", tableName);
+    	  try ( Statement stmt  = conn.createStatement();
+    	             ResultSet rs = stmt.executeQuery(sql)){
+		    		  
+		    		  String rankString = "";
+		    		  int i = 1;
+		    		  while (rs.next()) {
+		    			  rankString = rankString.concat(i +  "\t" + 
+		                                     rs.getString("username") + "\t" +
+		                                     rs.getInt("score") + "\n");
+		    			  i++;
+		              }
+		    		  return rankString;
+    	  		} catch (SQLException e) {
+    	            System.out.println(e.getMessage());
+    	        }
+    	  
+    	  return "";
+    	        
     }
     
     // This function creates hashed password using MD5 algorithm

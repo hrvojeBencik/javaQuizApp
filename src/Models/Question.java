@@ -1,14 +1,14 @@
 package Models;
 
-import java.util.HashMap;
+import java.util.Map;
 
 public class Question {
 	 public int id;
 	 private String question;
 	 public String description;
-	 private HashMap<String, Boolean> answers;
-	 public boolean multipleCorrectAnswers;
-	 public HashMap<String, Boolean> correct_answers;
+	 private Map<String, String> answers;
+	 public Boolean multipleCorrectAnswers;
+	 public Map<String, Boolean> correct_answers;
 	 public String explanation;
 	 public String tip;
 	 public String category;
@@ -17,7 +17,7 @@ public class Question {
 		 return this.question;
 	 }
 	 
-	 public HashMap<String, Boolean> getAnswers() {
+	 public Map<String, String> getAnswers() {
 		 return this.answers;
 	 }
 }

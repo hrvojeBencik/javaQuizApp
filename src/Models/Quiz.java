@@ -2,10 +2,12 @@ package Models;
 
 public class Quiz {
 	private int score = 0;
+	private String username;
 	private Question[] questions;
 	
-	public Quiz(Question[] questions) {
+	public Quiz(Question[] questions, String username) {
 		this.questions = questions;
+		this.username = username;
 	}
 	
 	public int getScore() {
@@ -18,5 +20,9 @@ public class Quiz {
 	
 	public Question[] getQuestions() {
 		return this.questions;
+	}
+	
+	public String getUsername() {
+		return this.username;
 	}
 }

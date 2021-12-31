@@ -1,8 +1,5 @@
 package App;
 
-import java.awt.BorderLayout;
-import java.awt.EventQueue;
-
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -10,6 +7,7 @@ import javax.swing.border.EmptyBorder;
 import Models.Question;
 import Models.Quiz;
 import Services.ApiController;
+import Services.DBManager;
 
 import java.awt.Color;
 import javax.swing.JLabel;
@@ -20,10 +18,13 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
 public class HomeScreen extends JFrame {
+	private String loggedInUsername;
 
 	private JPanel contentPane;
 
-	public HomeScreen() {
+	public HomeScreen(String username) {
+		this.loggedInUsername = username;
+		
 		setResizable(false);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 703, 506);
@@ -49,7 +50,6 @@ public class HomeScreen extends JFrame {
 		btn3Q.setForeground(new Color(255, 255, 255));
 		btn3Q.setBackground(new Color(100, 149, 237));
 		btn3Q.setBorderPainted(false);
-		btn3Q.setOpaque(true);
 		btn3Q.setFont(new Font("SansSerif", Font.BOLD, 16));
 		btn3Q.setBounds(257, 151, 181, 42);
 		contentPane.add(btn3Q);
@@ -89,6 +89,13 @@ public class HomeScreen extends JFrame {
 		btnHighScores.setBorderPainted(false);
 		btnHighScores.setBackground(new Color(100, 149, 237));
 		btnHighScores.setBounds(257, 310, 181, 42);
+		btnHighScores.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				dispose();
+				RankScreen frame =  new RankScreen(loggedInUsername);
+				frame.setVisible(true);
+			}
+		});
 		contentPane.add(btnHighScores);
 		
 		JButton btnLogout = new JButton("LOGOUT");
@@ -108,11 +115,15 @@ public class HomeScreen extends JFrame {
 		contentPane.add(btnLogout);
 	}
 	
-	public void startQuiz(int questionAmout) {
+	public void startQuiz(int questionAmount) {
 		ApiController apiController = new ApiController();
-		Question[] questions = apiController.getQuestions(null, null, 3);
-		Quiz quiz = new Quiz(questions);
-		setContentPane(new QuizPanel(quiz));
-		validate();
+		Question[] questions = apiController.getQuestions(null, null, questionAmount);
+		if(questions != null && questions.length > 0) {
+			Quiz quiz = new Quiz(questions, loggedInUsername);
+			JPanel quizPanel = new QuizPanel(quiz, this);
+			setContentPane(quizPanel);
+			validate();
+		}
+		
 	}
 }
