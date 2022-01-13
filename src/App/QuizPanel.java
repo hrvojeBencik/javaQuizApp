@@ -2,12 +2,13 @@ package App;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Map;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -18,6 +19,9 @@ import Models.Quiz;
 import Services.DBManager;
 import Services.Queries;
 import Services.TableName;
+import java.awt.Component;
+import java.awt.Dimension;
+
 
 public class QuizPanel extends JPanel{
 	private JFrame frame;
@@ -58,26 +62,33 @@ public class QuizPanel extends JPanel{
 		
 		setBackground(new Color(25, 25, 112));
 		setBorder(new EmptyBorder(5, 5, 5, 5));
-		setBounds(100, 100, 703, 506);
+		setBounds(100, 100, 693, 456);
+		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		questionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		questionLabel.setText(quiz.getQuestions()[currentQuestion].getQuestion());
 		questionLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		questionLabel.setForeground(new Color(255, 255, 255));
-		questionLabel.setFont(new Font("SansSerif", Font.PLAIN, 10));
+		questionLabel.setFont(new Font("SansSerif", Font.PLAIN, 14));
 		
 		add(questionLabel);
+		add(Box.createRigidArea(new Dimension(0, 30)));
+
 
 		initializeAnswerButtons();
-		
+		newQuestionButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+		newQuestionButton.setAlignmentY(JComponent.BOTTOM_ALIGNMENT);
 		newQuestionButton.setText("Next question");
-		newQuestionButton.setFont(new Font("SansSerif", Font.PLAIN, 16));
-		newQuestionButton.setForeground(new Color(0, 0, 0));
-		newQuestionButton.setBackground(new Color(255, 255, 255));
+		newQuestionButton.setForeground(new Color(255, 255, 255));
+		newQuestionButton.setBackground(new Color(100, 149, 237));
+		newQuestionButton.setBorderPainted(false);
+		newQuestionButton.setFont(new Font("SansSerif", Font.BOLD, 16));
+		newQuestionButton.setMaximumSize(new Dimension(200, 40));
 		newQuestionButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				switchQuestions();
 			}
 		});
-		add(newQuestionButton);
+		
 	}
 	
 	public void initializeAnswerButtons() {
@@ -86,10 +97,14 @@ public class QuizPanel extends JPanel{
 			// This line creates array of answers fetched from getAnswers() map values
 			String[] answers =  quiz.getQuestions()[currentQuestion].getAnswers().values().toArray(new String[quiz.getQuestions()[currentQuestion].getAnswers().size()]);
 			if(answers[i] != null ) {
+				answerButtons[i].setAlignmentX(Component.CENTER_ALIGNMENT);
+
 				answerButtons[i].setText(answers[i]);
 				answerButtons[i].setFont(new Font("SansSerif", Font.PLAIN, 16));
 				answerButtons[i].setForeground(new Color(0, 0, 0));
 				answerButtons[i].setBackground(new Color(255, 255, 255));
+				
+
 				answerButtons[i].addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						String correctAnswer = "";
@@ -120,12 +135,15 @@ public class QuizPanel extends JPanel{
 		if(currentQuestion == quiz.getQuestions().length-1) {
 			newQuestionButton.setText("Finish Quiz");
 		}
+		add(newQuestionButton);
 	}
 	
 	public void switchQuestions() {
+		remove(newQuestionButton);
 		if(currentQuestion != quiz.getQuestions().length-1) {
 			for (JButton component : answerButtons) {
 				   component.setVisible(false);
+				   remove(component);
 				}
 			currentQuestion++;
 		
